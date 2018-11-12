@@ -1,12 +1,20 @@
 import request from '@/utils/request'
 
 export function login(username, password) {
+  console.log(username)
+  console.log(password)
+  const grant_type = 'password'
+  const client_id = 2
+  const client_secret = '8imgP9bqwtvrPTfbpofOTIv1sKuNcMLLgnn4X2o3'
   return request({
-    url: '/user/login',
+    url: '/oauth/token',
     method: 'post',
     data: {
       username,
-      password
+      password,
+      grant_type,
+      client_id,
+      client_secret
     }
   })
 }

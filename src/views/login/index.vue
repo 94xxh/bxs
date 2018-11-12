@@ -51,8 +51,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        username: 'xiaohui@qq.com',
+        password: 'H.ae2zsPZGWsFk'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -75,6 +75,7 @@ export default {
         if (valid) {
           this.loading = true
           this.$store.dispatch('Login', this.loginForm).then(() => {
+            console.log('登录成功')
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch(() => {

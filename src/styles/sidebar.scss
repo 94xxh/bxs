@@ -92,7 +92,17 @@
   .el-menu--collapse .el-menu .el-submenu {
     min-width: 180px !important;
   }
-
+  .sidebar-container .el-submenu .is-active::after {
+    content: '';
+    position: absolute;
+    top: 12.5px;
+    right: -10px;
+    width: 25px;
+    height: 25px;
+    border-top: 12.5px solid transparent;
+    border-bottom: 12.5px solid transparent;
+    border-left: 12.5px solid #409eff;
+  }
   //适配移动端
   .mobile {
     .main-container {
