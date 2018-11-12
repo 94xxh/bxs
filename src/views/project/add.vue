@@ -5,7 +5,8 @@
         width=100%
         v-loading = "isLoading"
         element-loading-spinner="el-icon-loading" 
-        :model="addForm" :rules="rules" 
+        :model="addForm" 
+        :rules="rules" 
         ref="addForm" label-width="100px" 
         class="demo-addForm">
             <el-form-item label="项目名称" prop="project_name">
@@ -28,7 +29,7 @@
                 </el-select>
             </el-form-item>
             <el-form-item label="项目类型" prop="type">
-                <el-select v-model="addForm.tag" placeholder="请选择项目类型">
+                <el-select v-model="addForm.type" placeholder="请选择项目类型">
                     <el-option label="类型1" value="1"></el-option>
                     <el-option label="类型2" value="2"></el-option>
                 </el-select>
@@ -58,18 +59,36 @@
 </template>
 
 <script>
-// import { getList, delProject } from '@/api/project'
+import { saveProject, getProject, updateProject } from '@/api/project'
 
 export default {
   name: 'addProject',
   data() {
     return {
-      addForm: {},
-      submitbtnStatus: true,
+      addForm: {
+        'project_name': '',
+        'des': '',
+        'tag': '',
+        'type': '',
+        'web': ''
+      },
+      submitbtnStatus: true, // 区分新增和 更新操作
       isLoading: false,
       // 表单验证规则
       rules: {
-        title: [
+        project_name: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        des: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        tag: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        type: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        web: [
           { required: true, message: '必填项', trigger: 'change' }
         ]
       }
@@ -82,13 +101,128 @@ export default {
     if (rowData) {
       this.submitbtnStatus = false
       this.xlog('update')
+      console.log(rowData)
+      // 查询指定项目
+      getProject(rowData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+            const obj = {}
+            for (const i in res.data.result[0]) {
+              if (i !== 'id') {
+                obj[i] = res.data.result[0][i]
+              }
+            }
+            this.addForm = obj
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     } else {
       this.submitbtnStatus = true
       this.xlog('add')
     }
   },
   methods: {
-
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!this.submitbtnStatus) {
+            // 更新
+            const postData = {}
+            for (const i in this.addForm) {
+              if (this.addForm[i]) {
+                postData[i] = this.addForm[i]
+              }
+            }
+            console.log(postData)
+            updateProject(this.$route.query.id, postData)
+              .then(res => {
+                if (res.data.status.Code === 200) {
+                  // 处理数据
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'success',
+                    duration: 5 * 1000
+                  })
+                  // 跳转
+                  this.$router.push({
+                    name: 'projectList',
+                    query: {
+                      reLoad: Date.parse(new Date())
+                    }
+                  })
+                } else {
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'error',
+                    duration: 5 * 1000
+                  })
+                }
+              })
+              .catch(err => {
+                console.log(err)
+                this.$message({
+                  message: '读取接口失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+          } else {
+            saveProject(this.addForm)
+              .then(res => {
+                if (res.data.status.Code === 200) {
+                  // 处理数据
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'success',
+                    duration: 5 * 1000
+                  })
+                  // 跳转
+                  this.$router.push({
+                    name: 'projectList',
+                    query: {
+                      reLoad: Date.parse(new Date())
+                    }
+                  })
+                } else {
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'error',
+                    duration: 5 * 1000
+                  })
+                }
+              })
+              .catch(err => {
+                console.log(err)
+                this.$message({
+                  message: '读取接口失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    }
   }
 }
 </script>

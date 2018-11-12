@@ -14,26 +14,22 @@
       <el-button @click.stop="resetSearch()" type="danger">置空条件</el-button>
     </div>
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column align="center" label='ID' width="95">
+      <el-table-column align="center" label='ID' width="80">
         <template slot-scope="scope">
           {{scope.row.id}}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="项目名称">
         <template slot-scope="scope">
-          {{scope.row.title}}
+          {{scope.row.project_name}}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="网站地址" align="center">
         <template slot-scope="scope">
-          <span>{{scope.row.author}}</span>
+          <span>{{scope.row.web}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.dateTime}}</span>
-        </template>
+      <el-table-column align="center" prop="desc" label="项目描述">
       </el-table-column>
       <el-table-column label="操作" width="150">
           <template slot-scope="scope">
@@ -69,7 +65,9 @@ export default {
       listLoading: true,
       // 搜索条件
       searchData: {
-        name: ''
+        'name': '',
+        'current_page': 1,
+        'per_page': 10
       },
       //  分页参数
       pageSizes: [10, 20, 30, 40],
@@ -90,8 +88,9 @@ export default {
           if (res.data.status.Code === 200) {
             // 处理数据
             this.listLoading = false
-            console.log(res.data)
-            this.list = res.data.result
+            this.list = res.data.result.data
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
           } else {
             this.listLoading = false
             this.$message({
@@ -168,7 +167,8 @@ export default {
     },
     // 搜索
     search() {
-      this.searchData.page = 1
+      this.searchData.current_page = 1
+      this.searchData.per_page = this.pageSize
       this.getList(this.searchData)
     },
     // 置空搜索
