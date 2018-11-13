@@ -226,7 +226,7 @@ const asyncRouterMap = [
         path: 'add',
         name: 'addCms',
         component: () => import('@/views/cms/add'),
-        meta: { title: '新增发布' }
+        meta: { title: '新增文章' }
       },
       {
         path: 'edit',

@@ -50,8 +50,8 @@
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="submitForm('addForm','add')" v-if="submitbtnStatus">立即创建</el-button>
-                <el-button type="primary" @click="submitForm('addForm','update')" v-else>保存修改</el-button>
+                <el-button type="primary" @click="submitForm('addForm')" v-if="submitbtnStatus">立即创建</el-button>
+                <el-button type="primary" @click="submitForm('addForm')" v-else>保存修改</el-button>
             </el-form-item>
         </el-form>
     </div>

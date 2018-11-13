@@ -4,36 +4,34 @@
       <router-link  to="add" style="margin-right:30px">
         <a class="addNew">
             <el-button type="success">
-            新增发布
+            新增文章
             </el-button>
         </a>
       </router-link>
-      <el-input clearable v-model="searchData.name" placeholder="搜索条件">
+      <el-input clearable v-model="searchData.title" placeholder="搜索条件">
       </el-input>
       <el-button @click.stop="search()" type="primary">搜索</el-button>
       <el-button @click.stop="resetSearch()" type="danger">置空条件</el-button>
     </div>
     <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column align="center" label='ID' width="95">
+      <el-table-column align="center" label='ID' width="80">
         <template slot-scope="scope">
           {{scope.row.id}}
         </template>
       </el-table-column>
-      <el-table-column label="Title">
+      <el-table-column label="标题">
         <template slot-scope="scope">
           {{scope.row.title}}
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
+      <el-table-column label="标签" align="center">
         <template slot-scope="scope">
-          <span>{{scope.row.author}}</span>
+          <span>{{scope.row.tag}}</span>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.dateTime}}</span>
-        </template>
+      <el-table-column align="center" prop="category_id" label="分类">
+      </el-table-column>
+      <el-table-column align="center" prop="des" label="摘要">
       </el-table-column>
       <el-table-column label="操作" width="150">
           <template slot-scope="scope">
@@ -59,17 +57,19 @@
 </template>
 
 <script>
-import { getList, delProject } from '@/api/project'
+import { getList, delProject } from '@/api/cms'
 
 export default {
-  name: 'projectList',
+  name: 'cmsList',
   data() {
     return {
       list: [],
       listLoading: true,
       // 搜索条件
       searchData: {
-        name: ''
+        'title': '',
+        'current_page': 1,
+        'per_page': 10
       },
       //  分页参数
       pageSizes: [10, 20, 30, 40],
@@ -90,8 +90,10 @@ export default {
           if (res.data.status.Code === 200) {
             // 处理数据
             this.listLoading = false
-            console.log(res.data)
-            this.list = res.data.result
+            this.list = res.data.result.data
+            console.log(res.data.result.data)
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
           } else {
             this.listLoading = false
             this.$message({
@@ -114,7 +116,7 @@ export default {
     // 编辑
     handleEdit(row) {
       this.$router.push({
-        name: 'editCms',
+        name: 'editProject',
         query: {
           id: row.id
         }
@@ -168,7 +170,8 @@ export default {
     },
     // 搜索
     search() {
-      this.searchData.page = 1
+      this.searchData.current_page = 1
+      this.searchData.per_page = this.pageSize
       this.getList(this.searchData)
     },
     // 置空搜索
