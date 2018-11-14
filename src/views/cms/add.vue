@@ -33,9 +33,9 @@
                     <el-option label="类型2" value="2"></el-option>
                 </el-select>
             </el-form-item>
-            <!-- <el-form-item label="内容" prop="content">
-                
-            </el-form-item> -->
+            <el-form-item label="内容" prop="content">
+              <Tinymce :height=400 ref="editor" v-model="addForm.content" />
+            </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('addForm')" v-if="submitbtnStatus">立即创建</el-button>
                 <el-button type="primary" @click="submitForm('addForm')" v-else>保存修改</el-button>
@@ -47,6 +47,7 @@
 
 <script>
 import { save } from '@/api/cms'
+import Tinymce from '@/components/Tinymce'
 
 export default {
   name: 'addCms',
@@ -75,7 +76,9 @@ export default {
       }
     }
   },
-
+  components: {
+    Tinymce
+  },
   created() {
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
