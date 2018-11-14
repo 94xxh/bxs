@@ -91,7 +91,7 @@ const asyncRouterMap = [
       {
         path: 'list',
         name: 'gitList',
-        component: () => import('@/views/git/index'),
+        component: () => import('@/views/template'),
         meta: { title: '仓库列表' }
       },
       {

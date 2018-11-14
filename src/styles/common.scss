@@ -1,39 +1,233 @@
-// 分页
-.x-pagination {
-  width: 100%;
-  height: 100%;
-  margin: 20px auto;
-  & div {
-    width: auto;
-    float: right;
-  }
+@import "./mixin.scss";
+
+.el-table .row1 {
+  background: oldlace;
 }
-// 操作wrap
+
+.el-table .row2 {
+  // background: #f0f9eb;
+}
+
+.el-table .row3 {
+  background: #aad0e9;
+}
+
+.tableHead-12 {
+  color: black !important;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tableHead-14 {
+  color: black !important;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tableHead-16 {
+  color: black !important;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tableHead-18 {
+  color: black !important;
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .operate-wrapper {
   width: 100%;
   height: auto;
   padding: 10px;
   margin: 20px auto;
   border-radius: 5px;
+  font-size: 14px !important;
   // background: #8c868636;
   box-shadow: 0px 2px 5px #736c6c;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
 }
 
-.operate-wrapper>.el-input {
-  max-width: 200px;
+.operate-wrapper>.item {
+  flex: 0 1 auto;
+  display: flex;
+  height: 40px;
+  line-height: 40px;
+  margin: 5px;
+
+  div,
+  input,
+  .label {
+    flex: 0 1 auto;
+  }
+
+  .label {
+    flex: 1 1 auto;
+    margin-right: 15px;
+  }
+
+  & /deep/ .el-input {
+    width: auto;
+  }
+
+  div,
+  input,
+  .label,
+  a {
+    margin-right: 5px;
+  }
 }
 
-@mixin subForm {
-  width: 50%;
-  height: 50%;
+// .operate-wrapper>.el-input {
+//   max-width: 200px;
+// }
+.contain-wrap {
+  width: 100%;
+}
+
+.contain-operate {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+  margin: 10px 0;
+}
+
+.linkTxt {
+  color: blue;
+}
+
+.linkTxt:hover {
+  text-decoration-line: underline;
+}
+
+.x-noImg-tips {
+  bottom: 10px;
+  left: calc(50% - 50px);
+  position: absolute;
+  /* margin: 0 auto; */
+  height: 12px;
+  font-size: 12px;
+  color: #f56c6c;
+  line-height: 1;
+  padding-top: 4px;
+}
+
+.x-border-red {
+  border: red !important;
+}
+
+// 分页
+.x-pagination {
+  width: 100%;
+  height: 100%;
+  margin: 20px auto;
+
+  & div {
+    width: auto;
+    float: right;
+  }
+}
+
+.el-table .el-button {
+  margin: 5px;
   display: block;
   float: left;
-  margin: 20px auto;
 }
+
+// hide
+@keyframes xDelAmi {
+  0% {}
+
+  20% {
+    transform: translate(-30px, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  25% {
+    transform: translate(-30px, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  60% {
+    transform: translate(100%, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  100% {
+    transform: translate(100%, 0px) scale(1, 1);
+    opacity: 1;
+    // display: none;
+    disabled: disabled
+  }
+}
+
+@-webkit-keyframes xDelAmi {
+  0% {}
+
+  20% {
+    transform: translate(-30px, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  25% {
+    transform: translate(-30px, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  60% {
+    transform: translate(100%, 0px) scale(1, 1);
+    opacity: 1;
+    display: block;
+  }
+
+  100% {
+    transform: translate(100%, 0px) scale(1, 1);
+    opacity: 1;
+    // display: none;
+    disabled: disabled
+  }
+}
+
+.x-deleteAmi {
+  // display: none!important;
+  -webkit-animation: xDelAmi 1s linear 1 forwards !important;
+  animation: xDelAmi 1s linear 1 forwards !important;
+}
+
 
 .x-form {
   @include subForm;
+
   & .line {
     text-align: center;
   }
+}
+
+.x-tabDetailRow {
+  color: #21a0ff;
+
+}
+
+.x-tabDetailRow:hover {
+  cursor: pointer;
+  width: auto;
+  height: 100%;
+  color: #FF4949;
+  text-decoration: underline;
+}
+
+.el-form-item__label {
+  width: auto !important;
+}
+
+.el-form-item__content {
+  width: 50%;
 }
