@@ -8,45 +8,30 @@
         :model="addForm" :rules="rules" 
         ref="addForm" label-width="100px" 
         class="demo-addForm">
-            <el-form-item label="项目名称" prop="project_name">
-                <el-input v-model="addForm.project_name" placeholder="请输入项目名称"></el-input>
+            <el-form-item label="git名称" prop="figure_name">
+                <el-input v-model="addForm.figure_name" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="项目简介" prop="des">
+            <el-form-item label="git简介" prop="des">
                 <el-input
                 type="textarea"
                 :rows="2"
-                placeholder="请输入项目简介"
+                placeholder="请输入"
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="项目标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择项目标签">
+            <el-form-item label="标签" prop="tag">
+                <el-select v-model="addForm.tag" placeholder="请选择">
                     <el-option label="标签1" value="1"></el-option>
                     <el-option label="标签2" value="2"></el-option>
                     <el-option label="标签3" value="3"></el-option>
                     <el-option label="标签4" value="4"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="项目类型" prop="type">
-                <el-select v-model="addForm.tag" placeholder="请选择项目类型">
-                    <el-option label="类型1" value="1"></el-option>
-                    <el-option label="类型2" value="2"></el-option>
-                </el-select>
+            <el-form-item label="关键词" prop="keyword">
+                <el-input v-model="addForm.keyword" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="项目网址" prop="web">
-                <el-input v-model="addForm.web" placeholder="请输入项目网址"></el-input>
-            </el-form-item>
-            <el-form-item label="地区" prop="area_id">
-                <el-select v-model="addForm.area_id" placeholder="请选择地区">
-                    <el-option label="地区1" value="1"></el-option>
-                    <el-option label="地区2" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="团队" prop="team_id">
-                <el-select v-model="addForm.area_id" placeholder="请选择团队">
-                    <el-option label="team-1" value="1"></el-option>
-                    <el-option label="team-2" value="2"></el-option>
-                </el-select>
+            <el-form-item label="地址" prop="url">
+                <el-input v-model="addForm.url" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('addForm','add')" v-if="submitbtnStatus">立即创建</el-button>
@@ -58,7 +43,7 @@
 </template>
 
 <script>
-// import { getList, delProject } from '@/api/project'
+import { handleSave, handleUpdate, handleRed } from '@/api/git'
 
 export default {
   name: 'addGit',
@@ -69,7 +54,19 @@ export default {
       isLoading: false,
       // 表单验证规则
       rules: {
-        title: [
+        figure_name: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        des: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        tag: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        keyword: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        url: [
           { required: true, message: '必填项', trigger: 'change' }
         ]
       }
@@ -82,13 +79,120 @@ export default {
     if (rowData) {
       this.submitbtnStatus = false
       this.xlog('update')
+      handleRed(rowData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+            this.addForm = res.data.result[0]
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     } else {
       this.submitbtnStatus = true
       this.xlog('add')
     }
   },
   methods: {
-
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!this.submitbtnStatus) {
+            // 更新
+            const postData = {}
+            for (const i in this.addForm) {
+              if (this.addForm[i]) {
+                postData[i] = this.addForm[i]
+              }
+            }
+            console.log(postData)
+            handleUpdate(this.$route.query.id, postData)
+              .then(res => {
+                if (res.data.status.Code === 200) {
+                  // 处理数据
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'success',
+                    duration: 5 * 1000
+                  })
+                  // 跳转
+                  this.$router.push({
+                    name: 'gitList',
+                    query: {
+                      reLoad: Date.parse(new Date())
+                    }
+                  })
+                } else {
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'error',
+                    duration: 5 * 1000
+                  })
+                }
+              })
+              .catch(err => {
+                console.log(err)
+                this.$message({
+                  message: '读取接口失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+          } else {
+            handleSave(this.addForm)
+              .then(res => {
+                if (res.data.status.Code === 200) {
+                  // 处理数据
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'success',
+                    duration: 5 * 1000
+                  })
+                  // 跳转
+                  this.$router.push({
+                    name: 'gitList',
+                    query: {
+                      reLoad: Date.parse(new Date())
+                    }
+                  })
+                } else {
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'error',
+                    duration: 5 * 1000
+                  })
+                }
+              })
+              .catch(err => {
+                console.log(err)
+                this.$message({
+                  message: '读取接口失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+          }
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields()
+    }
   }
 }
 </script>

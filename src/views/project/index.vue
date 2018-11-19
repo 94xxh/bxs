@@ -1,56 +1,72 @@
 <template>
   <div class="app-container">
     <div class = "operate-wrapper">
-      <router-link  to="add" style="margin-right:30px">
-        <a class="addNew">
-            <el-button type="success">
-            新增项目
+      <div class="item">
+        <div class="label">关键词:</div>
+        <el-input clearable placeholder="请输入" v-model="searchData.name"></el-input>
+      </div>
+      
+      <!-- 按钮区域 -->
+      <div class="item">
+        <router-link  to="">
+            <a class="addNew">
+            <el-button type="primary">
+                搜索
             </el-button>
-        </a>
-      </router-link>
-      <el-input clearable v-model="searchData.name" placeholder="搜索条件">
-      </el-input>
-      <el-button @click.stop="search()" type="primary">搜索</el-button>
-      <el-button @click.stop="resetSearch()" type="danger">置空条件</el-button>
+            </a>
+        </router-link>   
+        <el-button type="warning">
+            清除
+        </el-button>
+      </div>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column align="center" label='ID' width="80">
-        <template slot-scope="scope">
-          {{scope.row.id}}
-        </template>
-      </el-table-column>
-      <el-table-column label="项目名称">
-        <template slot-scope="scope">
-          {{scope.row.project_name}}
-        </template>
-      </el-table-column>
-      <el-table-column label="网站地址" align="center">
-        <template slot-scope="scope">
-          <span>{{scope.row.web}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="desc" label="项目描述">
-      </el-table-column>
-      <el-table-column label="操作" width="150">
+
+    <div class="contain-wrap">
+      <div class="contain-operate">
+        <router-link to="add">
+          <el-button size="mini" type="success">新增项目</el-button>
+        </router-link>
+      </div>
+      <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
+        <el-table-column align="center" label='ID' width="80">
           <template slot-scope="scope">
-              <el-button size="mini" @click.stop="handleEdit(scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click.stop="handleDel(scope.row)">删除</el-button>
+            {{scope.row.id}}
           </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页 -->
-    <div class="x-pagination">
-        <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="pageSizes"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="totalNum">
-        </el-pagination>
+        </el-table-column>
+        <el-table-column label="项目名称">
+          <template slot-scope="scope">
+            {{scope.row.project_name}}
+          </template>
+        </el-table-column>
+        <el-table-column label="网站地址" align="center">
+          <template slot-scope="scope">
+            <span>{{scope.row.web}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" prop="desc" label="项目描述">
+        </el-table-column>
+        <el-table-column label="操作" width="150">
+            <template slot-scope="scope">
+                <el-button size="mini" @click.stop="handleEdit(scope.row)">编辑</el-button>
+                <el-button size="mini" type="danger" @click.stop="handleDel(scope.row)">删除</el-button>
+            </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页 -->
+      <div class="x-pagination">
+          <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalNum">
+          </el-pagination>
+      </div>
     </div>
+
   </div>
 </template>
 

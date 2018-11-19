@@ -46,6 +46,38 @@ export const constantRouterMap = [
 
 const asyncRouterMap = [
   {
+    path: '/user',
+    component: Layout,
+    redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
+    name: 'user',
+    meta: {
+      title: '账号管理',
+      icon: 'user',
+      roles: ['supadmin', 'admin']
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'userList',
+        component: () => import('@/views/user/index'),
+        meta: { title: '账号列表' }
+      },
+      {
+        path: 'adduser',
+        name: 'addUser',
+        component: () => import('@/views/user/add'),
+        meta: { title: '新增账号' }
+      },
+      {
+        path: 'edit',
+        name: 'editUser',
+        hidden: true,
+        component: () => import('@/views/user/add'),
+        meta: { title: '编辑账号' }
+      }
+    ]
+  },
+  {
     path: '/project',
     component: Layout,
     redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
@@ -91,11 +123,11 @@ const asyncRouterMap = [
       {
         path: 'list',
         name: 'gitList',
-        component: () => import('@/views/template'),
+        component: () => import('@/views/git/index'),
         meta: { title: '仓库列表' }
       },
       {
-        path: 'add',
+        path: 'addgit',
         name: 'addGit',
         component: () => import('@/views/git/add'),
         meta: { title: '新增仓库' }
@@ -127,7 +159,7 @@ const asyncRouterMap = [
         meta: { title: '平台列表' }
       },
       {
-        path: 'add',
+        path: 'addplatform',
         name: 'addPlatform',
         component: () => import('@/views/platform/add'),
         meta: { title: '新增平台' }
@@ -179,7 +211,7 @@ const asyncRouterMap = [
     redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
     name: 'Figure',
     meta: {
-      title: '白皮书',
+      title: '人物',
       icon: 'figure',
       roles: ['supadmin', 'admin']
     },
@@ -188,20 +220,20 @@ const asyncRouterMap = [
         path: 'list',
         name: 'figureList',
         component: () => import('@/views/figure/index'),
-        meta: { title: '白皮书列表' }
+        meta: { title: '人物列表' }
       },
       {
-        path: 'add',
+        path: 'addFigure',
         name: 'addFigure',
         component: () => import('@/views/figure/add'),
-        meta: { title: '新增白皮书' }
+        meta: { title: '新增人物' }
       },
       {
         path: 'edit',
         name: 'editFigure',
         hidden: true,
         component: () => import('@/views/figure/add'),
-        meta: { title: '编辑白皮书' }
+        meta: { title: '编辑人物' }
       }
     ]
   },

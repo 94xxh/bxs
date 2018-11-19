@@ -2,36 +2,8 @@
   <div class="app-container">
     <div class = "operate-wrapper">
       <div class="item">
-        <div class="label">会员名称:</div>
+        <div class="label">关键词:</div>
         <el-input clearable placeholder="请输入" v-model="searchData.name"></el-input>
-      </div>
-      <div class="item">
-        <div class="label">会员等级:</div>
-        <el-select clearable placeholder="请选择" v-model="searchData.lev">
-            <el-option label="等级1" value="1"></el-option>
-            <el-option label="等级2" value="2"></el-option>
-        </el-select>
-      </div>
-
-      <div class="item">
-        <div class="label">会员渠道:</div>
-        <el-select clearable placeholder="请选择" v-model="searchData.from">
-            <el-option label="渠道1" value="1"></el-option>
-            <el-option label="渠道2" value="2"></el-option>
-        </el-select>
-      </div>
-
-      <div class="item">
-        <div class="label">会员电话:</div>
-        <el-input clearable placeholder="请输入" v-model="searchData.mob"></el-input>
-      </div>
-      <div class="item">
-        <div class="label">会员积分:</div>
-        <el-input clearable placeholder="请输入" v-model="searchData.integral"></el-input>
-      </div>
-      <div class="item">
-        <div class="label">会员入会时间:</div>
-        <el-date-picker v-model="searchData.registerDate" type="daterange" format="yyyy-MM-dd" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"> </el-date-picker>
       </div>
       
       <!-- 按钮区域 -->
@@ -51,34 +23,27 @@
     <!-- 内容 -->
     <div class="contain-wrap">
         <div class="contain-operate">
-            <el-button size="mini" type="success">批量导出</el-button>
-            <el-button size="mini" type="success">批量删除</el-button>
+          <router-link to="">
+            <el-button size="mini" type="success">新增</el-button>
+          </router-link>
         </div>
         <el-table ref="multipleTable" stripe border :data="tableData" tooltip-effect="dark" style="width: 100%" :header-cell-style="{background: '#f4f4f4',color: 'black'}" @selection-change="handleSelectionChange">
-            <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column label="会员名称" width="120" show-overflow-tooltip>
-                <template slot-scope="scope">
-                    <span @click="handleDetail(scope.row, 'detail')" class="linkTxt">{{ scope.row.name }}</span>
-                </template>
+            <el-table-column prop="id" label="ID" width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="figure_name" label="人物名" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="des" label="描述" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="name" label="电话" width="120" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="address" label="性别" show-overflow-tooltip>
+            <el-table-column prop="jobs" label="职业" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="date" label="出生日期" show-overflow-tooltip>
+            <el-table-column prop="tag" label="标签" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="address" label="家庭住址" show-overflow-tooltip>
+            <el-table-column prop="keyword" label="关键词" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="address" label="会员等级" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="address" label="当前积分" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="address" label="入会时间" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="address" label="会员渠道" show-overflow-tooltip>
+            <el-table-column prop="create_datetime" label="创建时间" show-overflow-tooltip>
             </el-table-column>
             <el-table-column label="操作" width="200">
                 <template slot-scope="scope">
                     <el-button @click="handleDetail(scope.row, 'edit')" size="mini" type="success">编辑</el-button>
+                    <el-button @click="handleDel(scope.row)" size="mini" type="danger">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -99,6 +64,7 @@
 </template>
 
 <script>
+import { getList } from '@/api/company'
 export default {
   name: 'vipList',
   data() {
@@ -107,11 +73,6 @@ export default {
       // 搜索条件
       searchData: {
         name: '',
-        lev: '',
-        from: '',
-        mob: '',
-        registerDate: '',
-        integral: '',
         page: 1,
         pagenum: 10
       },
@@ -138,7 +99,7 @@ export default {
           name: '王小虎',
           address: '上海市普陀区金沙江路 1518 弄'
         }
-      ],
+      ]
     }
   },
   created() {
@@ -148,11 +109,43 @@ export default {
 
   },
   methods: {
+    // 获取列表
+    getList(param) {
+      const postData = param || this.searchData
+      this.listLoading = true
+      getList(postData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+            this.listLoading = false
+            this.tableData = res.data.result.data
+            console.log(res.data.result.data)
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
+          } else {
+            this.listLoading = false
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          this.listLoading = false
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
+    },
     /**
      * 查看详情
      * row 所选对象参数， type 预览/编辑
      */
-    handleDetail(row, type){
+    handleDetail(row, type) {
       const urlname = type === 'edit' ? 'vipEdit' : 'vipDetail'
       this.$router.push({
         name: urlname,
@@ -162,20 +155,66 @@ export default {
       })
       // console.log(row)
     },
+    // 删除
+    handleDel(row) {
+      this.$confirm('此操作不可逆，确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const postData = {
+          id: row.id
+        }
+        this.isLoading = true
+        handleDel(postData)
+          .then(res => {
+            this.isLoading = false
+            if (res.data.status.Code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 5 * 1000
+              })
+              // 重载
+              this.getList(this.searchData)
+            } else {
+              this.$message({
+                message: res.data.status.Msg,
+                type: 'error',
+                duration: 5 * 1000
+              })
+            }
+          })
+          .catch(err => {
+            this.isLoading = false
+            this.$message({
+              message: '请求接口失败！',
+              type: 'error',
+              duration: 5 * 1000
+            })
+            console.log(err)
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      })
+    },
     // checkbox 函数
     // 全选
     toggleSelection(rows) {
-    if (rows) {
-      rows.forEach(row => {
-        this.$refs.multipleTable.toggleRowSelection(row);
-      });
-    } else {
-      this.$refs.multipleTable.clearSelection();
-    }
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
+      } else {
+        this.$refs.multipleTable.clearSelection()
+      }
     },
     // change
     handleSelectionChange(val) {
-      this.multipleSelection = val;
+      this.multipleSelection = val
     },
     // end
     // 分页事件

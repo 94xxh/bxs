@@ -17,9 +17,18 @@ export function getList(params) {
 }
 
 //  新建文章
-export function save(postData) {
+export function saveArticle(postData) {
   return request({
     url: '/api/article/save',
+    method: 'post',
+    data: qs.stringify(postData)
+  })
+}
+
+//  更新文章
+export function updateArticle(id, postData) {
+  return request({
+    url: '/api/article/update/' + id,
     method: 'post',
     data: qs.stringify(postData)
   })

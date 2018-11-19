@@ -46,7 +46,7 @@
 </template>
 
 <script>
-import { save } from '@/api/cms'
+import { saveArticle, updateArticle } from '@/api/cms'
 import Tinymce from '@/components/Tinymce'
 
 export default {
@@ -103,7 +103,7 @@ export default {
               }
             }
             console.log(postData)
-            updateProject(this.$route.query.id, postData)
+            updateArticle(this.$route.query.id, postData)
               .then(res => {
                 if (res.data.status.Code === 200) {
                   // 处理数据
@@ -137,7 +137,7 @@ export default {
               })
           } else {
             //   新增
-            save(this.addForm)
+            saveArticle(this.addForm)
               .then(res => {
                 if (res.data.status.Code === 200) {
                   // 处理数据
@@ -148,7 +148,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'saveList',
+                    name: 'cmsList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }

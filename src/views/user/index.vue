@@ -23,22 +23,19 @@
     <!-- 内容 -->
     <div class="contain-wrap">
         <div class="contain-operate">
-          <router-link to="addgit">
+          <router-link to="adduser">
             <el-button size="mini" type="success">新增</el-button>
           </router-link>
         </div>
         <el-table ref="multipleTable" stripe border :data="tableData" tooltip-effect="dark" style="width: 100%" :header-cell-style="{background: '#f4f4f4',color: 'black'}" @selection-change="handleSelectionChange">
             <el-table-column prop="id" label="ID" width="120" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="git_name" label="人物名" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="des" label="描述" show-overflow-tooltip>
+            <el-table-column prop="email" label="邮箱" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="url" label="仓库地址" show-overflow-tooltip>
+            <el-table-column prop="name" label="姓名" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="tag" label="标签" show-overflow-tooltip>
+            <el-table-column prop="created_at" label="创建时间" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="keyword" label="关键词" show-overflow-tooltip>
-            </el-table-column>
-            <el-table-column prop="create_datetime" label="创建时间" show-overflow-tooltip>
+            <el-table-column prop="updated_at" label="更新时间" show-overflow-tooltip>
             </el-table-column>
             <el-table-column label="操作" width="200">
                 <template slot-scope="scope">
@@ -64,9 +61,9 @@
 </template>
 
 <script>
-import { getList } from '@/api/git'
+import { getList } from '@/api/user'
 export default {
-  name: 'gitList',
+  name: 'userList',
   data() {
     return {
       isLoading: true,
@@ -129,7 +126,7 @@ export default {
      * row 所选对象参数， type 预览/编辑
      */
     handleDetail(row, type) {
-      const urlname = type === 'edit' ? 'editGit' : 'gitList'
+      const urlname = type === 'edit' ? 'vipEdit' : 'vipDetail'
       this.$router.push({
         name: urlname,
         query: {

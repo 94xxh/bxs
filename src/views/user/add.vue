@@ -8,45 +8,14 @@
         :model="addForm" :rules="rules" 
         ref="addForm" label-width="100px" 
         class="demo-addForm">
-            <el-form-item label="项目名称" prop="project_name">
-                <el-input v-model="addForm.project_name" placeholder="请输入"></el-input>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="addForm.name" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="项目简介" prop="des">
-                <el-input
-                type="textarea"
-                :rows="2"
-                placeholder="请输入"
-                v-model="addForm.des">
-                </el-input>
+            <el-form-item label="邮箱" prop="email">
+                <el-input v-model="addForm.email" placeholder="请输入"></el-input>
             </el-form-item>
-            <el-form-item label="项目标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="项目类型" prop="type">
-                <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="类型1" value="1"></el-option>
-                    <el-option label="类型2" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="项目网址" prop="web">
-                <el-input v-model="addForm.web" placeholder="请输入"></el-input>
-            </el-form-item>
-            <el-form-item label="地区" prop="area_id">
-                <el-select v-model="addForm.area_id" placeholder="请选择">
-                    <el-option label="地区1" value="1"></el-option>
-                    <el-option label="地区2" value="2"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="团队" prop="team_id">
-                <el-select v-model="addForm.area_id" placeholder="请选择">
-                    <el-option label="team-1" value="1"></el-option>
-                    <el-option label="team-2" value="2"></el-option>
-                </el-select>
+            <el-form-item label="密码" prop="password">
+                <el-input v-model="addForm.password" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('addForm','add')" v-if="submitbtnStatus">立即创建</el-button>
@@ -58,10 +27,10 @@
 </template>
 
 <script>
-// import { getList, delProject } from '@/api/project'
+import { handleSave, handleUpdate, handleRed } from '@/api/user'
 
 export default {
-  name: 'addProject',
+  name: 'addUser',
   data() {
     return {
       addForm: {},
@@ -69,19 +38,13 @@ export default {
       isLoading: false,
       // 表单验证规则
       rules: {
-        figure_name: [
+        name: [
           { required: true, message: '必填项', trigger: 'change' }
         ],
-        des: [
+        email: [
           { required: true, message: '必填项', trigger: 'change' }
         ],
-        tag: [
-          { required: true, message: '必填项', trigger: 'change' }
-        ],
-        keyword: [
-          { required: true, message: '必填项', trigger: 'change' }
-        ],
-        type: [
+        password: [
           { required: true, message: '必填项', trigger: 'change' }
         ]
       }
@@ -94,6 +57,27 @@ export default {
     if (rowData) {
       this.submitbtnStatus = false
       this.xlog('update')
+      handleRed(rowData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+            this.addForm = res.data.result[0]
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     } else {
       this.submitbtnStatus = true
       this.xlog('add')
@@ -112,7 +96,7 @@ export default {
               }
             }
             console.log(postData)
-            updateProject(this.$route.query.id, postData)
+            handleUpdate(this.$route.query.id, postData)
               .then(res => {
                 if (res.data.status.Code === 200) {
                   // 处理数据
@@ -123,7 +107,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'projectList',
+                    name: 'userList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }
@@ -145,7 +129,7 @@ export default {
                 })
               })
           } else {
-            saveProject(this.addForm)
+            handleSave(this.addForm)
               .then(res => {
                 if (res.data.status.Code === 200) {
                   // 处理数据
@@ -156,7 +140,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'projectList',
+                    name: 'userList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }

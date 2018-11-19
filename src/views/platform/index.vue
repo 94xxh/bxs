@@ -1,87 +1,98 @@
 <template>
   <div class="app-container">
     <div class = "operate-wrapper">
-      <router-link  to="add" style="margin-right:30px">
-        <a class="addNew">
-            <el-button type="success">
-            新增平台
+      <div class="item">
+        <div class="label">关键词:</div>
+        <el-input clearable placeholder="请输入" v-model="searchData.name"></el-input>
+      </div>
+      
+      <!-- 按钮区域 -->
+      <div class="item">
+        <router-link  to="addplatform">
+            <a class="addNew">
+            <el-button type="primary">
+                搜索
             </el-button>
-        </a>
-      </router-link>
-      <el-input clearable v-model="searchData.name" placeholder="搜索条件">
-      </el-input>
-      <el-button @click.stop="search()" type="primary">搜索</el-button>
-      <el-button @click.stop="resetSearch()" type="danger">置空条件</el-button>
+            </a>
+        </router-link>   
+        <el-button type="warning">
+            清除
+        </el-button>
+      </div>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-      <el-table-column align="center" label='ID' width="95">
-        <template slot-scope="scope">
-          {{scope.row.id}}
-        </template>
-      </el-table-column>
-      <el-table-column label="Title">
-        <template slot-scope="scope">
-          {{scope.row.title}}
-        </template>
-      </el-table-column>
-      <el-table-column label="Author" width="110" align="center">
-        <template slot-scope="scope">
-          <span>{{scope.row.author}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" prop="created_at" label="Display_time" width="200">
-        <template slot-scope="scope">
-          <i class="el-icon-time"></i>
-          <span>{{scope.row.dateTime}}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="150">
-          <template slot-scope="scope">
-              <el-button size="mini" @click.stop="handleEdit(scope.row)">编辑</el-button>
-              <el-button size="mini" type="danger" @click.stop="handleDel(scope.row)">删除</el-button>
-          </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页 -->
-    <div class="x-pagination">
-        <el-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="currentPage"
-        :page-sizes="pageSizes"
-        :page-size="pageSize"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="totalNum">
-        </el-pagination>
+    <!-- 内容 -->
+    <div class="contain-wrap">
+        <div class="contain-operate">
+          <router-link to="addplatform">
+            <el-button size="mini" type="success">新增</el-button>
+          </router-link>
+        </div>
+        <el-table ref="multipleTable" stripe border :data="tableData" tooltip-effect="dark" style="width: 100%" :header-cell-style="{background: '#f4f4f4',color: 'black'}" @selection-change="handleSelectionChange">
+            <el-table-column prop="id" label="ID" width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="countries_id" label="countries_id" width="120" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="platform_name" label="平台名称" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="figure_id" label="人物" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="des" label="描述" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="web" label="网站地址" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="tag" label="标签" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column label="操作" width="200">
+                <template slot-scope="scope">
+                    <el-button @click="handleDetail(scope.row, 'edit')" size="mini" type="success">编辑</el-button>
+                    <el-button @click="handleDel(scope.row)" size="mini" type="danger">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <!-- 分页 -->
+        <div class="x-pagination">
+            <el-pagination
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page="currentPage"
+            :page-sizes="pageSizes"
+            :page-size="pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="totalNum">
+            </el-pagination>
+        </div>
     </div>
   </div>
 </template>
 
 <script>
-import { getList, delProject } from '@/api/project'
-
+import { getList, handleDel } from '@/api/platform'
 export default {
   name: 'platformList',
   data() {
     return {
-      list: [],
-      listLoading: true,
+      isLoading: true,
       // 搜索条件
       searchData: {
-        name: ''
+        name: '',
+        page: 1,
+        pagenum: 10
       },
       //  分页参数
       pageSizes: [10, 20, 30, 40],
       pageSize: 10,
       currentPage: 1,
-      totalNum: 100
+      totalNum: 0,
+      //   end
+      tableData: []
     }
   },
   created() {
     this.getList()
   },
+  components: {
+
+  },
   methods: {
+    // 获取列表
     getList(param) {
       const postData = param || this.searchData
       this.listLoading = true
@@ -90,8 +101,10 @@ export default {
           if (res.data.status.Code === 200) {
             // 处理数据
             this.listLoading = false
-            console.log(res.data)
-            this.list = res.data.result
+            this.tableData = res.data.result.data
+            console.log(res.data.result.data)
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
           } else {
             this.listLoading = false
             this.$message({
@@ -111,27 +124,30 @@ export default {
           })
         })
     },
-    // 编辑
-    handleEdit(row) {
+    /**
+     * 查看详情
+     * row 所选对象参数， type 预览/编辑
+     */
+    handleDetail(row, type) {
+      const urlname = type === 'edit' ? 'editPlatform' : 'platformList'
       this.$router.push({
-        name: 'editPlatform',
+        name: urlname,
         query: {
           id: row.id
         }
       })
+      // console.log(row)
     },
     // 删除
     handleDel(row) {
+      console.log(row.id)
       this.$confirm('此操作不可逆，确定删除?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const postData = {
-          id: row.id
-        }
         this.isLoading = true
-        delProject(postData)
+        handleDel(row.id)
           .then(res => {
             this.isLoading = false
             if (res.data.status.Code === 200) {
@@ -166,33 +182,43 @@ export default {
         })
       })
     },
-    // 搜索
-    search() {
-      this.searchData.page = 1
-      this.getList(this.searchData)
-    },
-    // 置空搜索
-    resetSearch() {
-      this.searchData = {
-        name: ''
+    // checkbox 函数
+    // 全选
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row)
+        })
+      } else {
+        this.$refs.multipleTable.clearSelection()
       }
     },
+    // change
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+    },
+    // end
     // 分页事件
     handleSizeChange(row) {
     // 每页显示数改变
       this.searchData.pagenum = row
-      this.getList(this.searchData)
+    //   this.getList(this.searchData)
     },
     handleCurrentChange(row) {
     // 当前页改变
       this.searchData.page = row
-      this.getList(this.searchData)
+    //   this.getList(this.searchData)
     }
     // 分页end
   }
 }
 </script>
-<style lang="scss" scoped>
+
+<style lang="scss">
 @import "src/styles/common.scss";
 </style>
+<style scoped lang="scss">
+.app-container{
 
+}
+</style>
