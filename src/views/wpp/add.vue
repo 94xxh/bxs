@@ -8,8 +8,33 @@
         :model="addForm" :rules="rules" 
         ref="addForm" label-width="100px" 
         class="demo-addForm">
-            <el-form-item label="标签名称" prop="tag_name">
-                <el-input v-model="addForm.tag_name" placeholder="请输入"></el-input>
+            <el-form-item label="白皮书名称" prop="wpp_name">
+                <el-input v-model="addForm.wpp_name" placeholder="请输入"></el-input>
+            </el-form-item>
+            <el-form-item label="简介" prop="des">
+                <el-input
+                type="textarea"
+                :rows="2"
+                placeholder="请输入"
+                v-model="addForm.des">
+                </el-input>
+            </el-form-item>
+            <!-- <el-form-item label="状态" prop="tag">
+                <el-select v-model="addForm.tag" placeholder="请选择">
+                    <el-option label="标签1" value="1"></el-option>
+                    <el-option label="标签2" value="2"></el-option>
+                    <el-option label="标签3" value="3"></el-option>
+                    <el-option label="标签4" value="4"></el-option>
+                </el-select>
+            </el-form-item> -->
+            <el-form-item label="关键词" prop="keyword">
+                <el-input v-model="addForm.keyword" placeholder="请输入"></el-input>
+            </el-form-item>
+            <el-form-item label="地址" prop="wpp_url">
+                <el-input v-model="addForm.wpp_url" placeholder="请输入"></el-input>
+            </el-form-item>
+            <el-form-item label="内容" prop="content">
+              <Tinymce :height=400 ref="editor" v-model="addForm.content" />
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('addForm','add')" v-if="submitbtnStatus">立即创建</el-button>
@@ -21,10 +46,11 @@
 </template>
 
 <script>
-import { handleSave, handleUpdate, handleRed } from '@/api/tags'
+import { handleSave, handleUpdate, handleRed } from '@/api/wpp'
+import Tinymce from '@/components/Tinymce'
 
 export default {
-  name: 'addtag',
+  name: 'addWpp',
   data() {
     return {
       addForm: {},
@@ -32,7 +58,7 @@ export default {
       isLoading: false,
       // 表单验证规则
       rules: {
-        tag_name: [
+        wpp_name: [
           { required: true, message: '必填项', trigger: 'change' }
         ],
         des: [
@@ -44,13 +70,18 @@ export default {
         keyword: [
           { required: true, message: '必填项', trigger: 'change' }
         ],
-        jobs: [
+        wpp_url: [
+          { required: true, message: '必填项', trigger: 'change' }
+        ],
+        content: [
           { required: true, message: '必填项', trigger: 'change' }
         ]
       }
     }
   },
-
+  components: {
+    Tinymce
+  },
   created() {
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
@@ -107,7 +138,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'tagsList',
+                    name: 'wppList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }
@@ -140,7 +171,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'tagsList',
+                    name: 'wppList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }

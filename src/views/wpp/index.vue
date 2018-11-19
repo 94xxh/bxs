@@ -1,11 +1,12 @@
 <template>
   <div class="app-container">
-    <!-- <div class = "operate-wrapper">
+    <div class = "operate-wrapper">
       <div class="item">
         <div class="label">关键词:</div>
         <el-input clearable placeholder="请输入" v-model="searchData.name"></el-input>
       </div>
       
+      <!-- 按钮区域 -->
       <div class="item">
         <router-link  to="">
             <a class="addNew">
@@ -18,17 +19,32 @@
             清除
         </el-button>
       </div>
-    </div> -->
+    </div>
     <!-- 内容 -->
     <div class="contain-wrap">
         <div class="contain-operate">
-          <router-link to="addTag">
+          <router-link to="addwpp">
             <el-button size="mini" type="success">新增</el-button>
           </router-link>
         </div>
         <el-table ref="multipleTable" stripe border :data="tableData" tooltip-effect="dark" style="width: 100%" :header-cell-style="{background: '#f4f4f4',color: 'black'}" @selection-change="handleSelectionChange">
             <el-table-column prop="id" label="ID" width="120" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="tag_name" label="标签名" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="wpp_name" label="名称" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="des" label="描述" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="tag" label="标签" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="keyword" label="关键词" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="wpp_url" label="地址" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column prop="status" label="状态" show-overflow-tooltip>
+            </el-table-column>
+            <el-table-column label="内容" show-overflow-tooltip>
+                <template slot-scope="scope">
+                    <div v-html="scope.row.content"></div>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" width="200">
                 <template slot-scope="scope">
                     <el-button @click="handleDetail(scope.row, 'edit')" size="mini" type="success">编辑</el-button>
@@ -53,9 +69,9 @@
 </template>
 
 <script>
-import { getList, handleDel } from '@/api/tags'
+import { getList, handleDel } from '@/api/wpp'
 export default {
-  name: 'tagsList',
+  name: 'wppList',
   data() {
     return {
       isLoading: true,
@@ -118,7 +134,7 @@ export default {
      * row 所选对象参数， type 预览/编辑
      */
     handleDetail(row, type) {
-      const urlname = type === 'edit' ? 'editTag' : 'tagsList'
+      const urlname = type === 'edit' ? 'editWpp' : 'editList'
       this.$router.push({
         name: urlname,
         query: {

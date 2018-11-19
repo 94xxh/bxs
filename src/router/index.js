@@ -319,14 +319,14 @@ const asyncRouterMap = [
         meta: { title: '标签列表' }
       },
       {
-        path: 'add',
-        name: 'addTags',
+        path: 'addTag',
+        name: 'addTag',
         component: () => import('@/views/tags/add'),
         meta: { title: '新增标签' }
       },
       {
         path: 'edit',
-        name: 'editTags',
+        name: 'editTag',
         hidden: true,
         component: () => import('@/views/tags/add'),
         meta: { title: '编辑标签' }
@@ -334,17 +334,34 @@ const asyncRouterMap = [
     ]
   },
   {
-    path: '/form',
+    path: '/wpp',
     component: Layout,
+    redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
+    name: 'wpp',
     meta: {
+      title: '白皮书管理',
+      icon: 'platform',
       roles: ['supadmin', 'admin']
     },
     children: [
       {
-        path: 'index',
-        name: 'testForm',
-        component: () => import('@/views/form/index'),
-        meta: { title: '测试缓存tabs', icon: 'form' }
+        path: 'list',
+        name: 'wppList',
+        component: () => import('@/views/wpp/index'),
+        meta: { title: '白皮书列表' }
+      },
+      {
+        path: 'addwpp',
+        name: 'addWpp',
+        component: () => import('@/views/wpp/add'),
+        meta: { title: '新增白皮书' }
+      },
+      {
+        path: 'editwpp',
+        name: 'editWpp',
+        hidden: true,
+        component: () => import('@/views/wpp/add'),
+        meta: { title: '编辑白皮书' }
       }
     ]
   }
