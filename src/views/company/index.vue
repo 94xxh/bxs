@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="isLoading">
     <div class = "operate-wrapper">
       <div class="item">
         <div class="label">关键词:</div>
@@ -39,7 +39,7 @@
             <el-table-column label="操作" width="200">
                 <template slot-scope="scope">
                     <el-button @click="handleDetail(scope.row, 'edit')" size="mini" type="success">编辑</el-button>
-                    <el-button @click="handleDetail(scope.row, 'edit')" size="mini" type="danger">删除</el-button>
+                    <el-button @click="handleDel(scope.row)" size="mini" type="danger">删除</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/company'
+import { getList, handleDel } from '@/api/company'
 export default {
   name: 'companyList',
   data() {
@@ -68,7 +68,6 @@ export default {
       isLoading: true,
       // 搜索条件
       searchData: {
-        name: '',
         page: 1,
         pagenum: 10
       },
@@ -91,18 +90,16 @@ export default {
     // 获取列表
     getList(param) {
       const postData = param || this.searchData
-      this.listLoading = true
       getList(postData)
         .then(res => {
+          this.isLoading = false
           if (res.data.status.Code === 200) {
             // 处理数据
-            this.listLoading = false
             this.tableData = res.data.result.data
             console.log(res.data.result.data)
             this.totalNum = res.data.result.total
             this.currentPage = res.data.result.current_page
           } else {
-            this.listLoading = false
             this.$message({
               message: res.data.status.Msg,
               type: 'error',
@@ -111,7 +108,7 @@ export default {
           }
         })
         .catch(err => {
-          this.listLoading = false
+          this.isLoading = false
           console.log(err)
           this.$message({
             message: '读取接口失败！',
@@ -125,7 +122,7 @@ export default {
      * row 所选对象参数， type 预览/编辑
      */
     handleDetail(row, type) {
-      const urlname = type === 'edit' ? 'vipEdit' : 'vipDetail'
+      const urlname = type === 'edit' ? 'editCompany' : ''
       this.$router.push({
         name: urlname,
         query: {
@@ -133,6 +130,49 @@ export default {
         }
       })
       // console.log(row)
+    },
+    // 删除
+    handleDel(row) {
+      this.$confirm('此操作不可逆，确定删除?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.isLoading = true
+        handleDel(row.id)
+          .then(res => {
+            this.isLoading = false
+            if (res.data.status.Code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: 5 * 1000
+              })
+              // 重载
+              this.getList(this.searchData)
+            } else {
+              this.$message({
+                message: res.data.status.Msg,
+                type: 'error',
+                duration: 5 * 1000
+              })
+            }
+          })
+          .catch(err => {
+            this.isLoading = false
+            this.$message({
+              message: '请求接口失败！',
+              type: 'error',
+              duration: 5 * 1000
+            })
+            console.log(err)
+          })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消删除'
+        })
+      })
     },
     // checkbox 函数
     // 全选

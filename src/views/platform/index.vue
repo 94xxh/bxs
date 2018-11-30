@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="isLoading">
     <div class = "operate-wrapper">
       <div class="item">
         <div class="label">关键词:</div>
@@ -72,7 +72,6 @@ export default {
       isLoading: true,
       // 搜索条件
       searchData: {
-        name: '',
         page: 1,
         pagenum: 10
       },
@@ -95,18 +94,15 @@ export default {
     // 获取列表
     getList(param) {
       const postData = param || this.searchData
-      this.listLoading = true
       getList(postData)
         .then(res => {
+          this.isLoading = false
           if (res.data.status.Code === 200) {
             // 处理数据
-            this.listLoading = false
             this.tableData = res.data.result.data
-            console.log(res.data.result.data)
             this.totalNum = res.data.result.total
             this.currentPage = res.data.result.current_page
           } else {
-            this.listLoading = false
             this.$message({
               message: res.data.status.Msg,
               type: 'error',
@@ -114,9 +110,8 @@ export default {
             })
           }
         })
-        .catch(err => {
-          this.listLoading = false
-          console.log(err)
+        .catch(() => {
+          this.isLoading = false
           this.$message({
             message: '读取接口失败！',
             type: 'error',

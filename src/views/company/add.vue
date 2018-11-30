@@ -19,12 +19,9 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="公司标签" prop="tag">
+            <el-form-item label="标签" prop="tag">
                 <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
+                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="分类" prop="category_id">
@@ -46,13 +43,15 @@
 </template>
 
 <script>
-import { saveCompany } from '@/api/company'
+import { saveCompany, handleRed, updateCompany } from '@/api/company'
+const tags = require('@/api/tags')
 
 export default {
   name: 'addCompany',
   data() {
     return {
       addForm: {},
+      tagsList: {},
       submitbtnStatus: true,
       isLoading: false,
       // 表单验证规则
@@ -77,11 +76,54 @@ export default {
   },
 
   created() {
+    // 获取标签
+    tags.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.tagsList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
     if (rowData) {
       this.submitbtnStatus = false
       this.xlog('update')
+      handleRed(rowData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+            this.addForm = res.data.result[0]
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     } else {
       this.submitbtnStatus = true
       this.xlog('add')
@@ -99,43 +141,10 @@ export default {
                 postData[i] = this.addForm[i]
               }
             }
-            console.log(postData)
-            // updateArticle(this.$route.query.id, postData)
-            //   .then(res => {
-            //     if (res.data.status.Code === 200) {
-            //       // 处理数据
-            //       this.$message({
-            //         message: res.data.status.Msg,
-            //         type: 'success',
-            //         duration: 5 * 1000
-            //       })
-            //       // 跳转
-            //       this.$router.push({
-            //         name: 'companyList',
-            //         query: {
-            //           reLoad: Date.parse(new Date())
-            //         }
-            //       })
-            //     } else {
-            //       this.$message({
-            //         message: res.data.status.Msg,
-            //         type: 'error',
-            //         duration: 5 * 1000
-            //       })
-            //     }
-            //   })
-            //   .catch(err => {
-            //     console.log(err)
-            //     this.$message({
-            //       message: '读取接口失败！',
-            //       type: 'error',
-            //       duration: 5 * 1000
-            //     })
-            //   })
-          } else {
-            //   新增
-            saveCompany(this.addForm)
+            this.isLoading = true
+            updateCompany(this.addForm, this.$route.query.id)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -159,6 +168,44 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
+                console.log(err)
+                this.$message({
+                  message: '读取接口失败！',
+                  type: 'error',
+                  duration: 5 * 1000
+                })
+              })
+          } else {
+            //   新增
+            this.isLoading = true
+            saveCompany(this.addForm)
+              .then(res => {
+                this.isLoading = false
+                if (res.data.status.Code === 200) {
+                  // 处理数据
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'success',
+                    duration: 5 * 1000
+                  })
+                  // 跳转
+                  this.$router.push({
+                    name: 'companyList',
+                    query: {
+                      reLoad: Date.parse(new Date())
+                    }
+                  })
+                } else {
+                  this.$message({
+                    message: res.data.status.Msg,
+                    type: 'error',
+                    duration: 5 * 1000
+                  })
+                }
+              })
+              .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',

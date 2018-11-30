@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import { getList, delProject } from '@/api/project'
+import { getList, handleDel } from '@/api/project'
 
 export default {
   name: 'projectList',
@@ -69,7 +69,8 @@ export default {
       listLoading: true,
       // 搜索条件
       searchData: {
-        name: ''
+        page: 1,
+        pagenum: 10
       },
       //  分页参数
       pageSizes: [10, 20, 30, 40],
@@ -127,11 +128,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const postData = {
-          id: row.id
-        }
         this.isLoading = true
-        delProject(postData)
+        handleDel(row.id)
           .then(res => {
             this.isLoading = false
             if (res.data.status.Code === 200) {

@@ -69,7 +69,7 @@ export default {
     },
     moveToCurrentTag() {
       const tags = this.$refs.tag
-      if(!tags){
+      if (!tags) {
         return
       }
       this.$nextTick(() => {

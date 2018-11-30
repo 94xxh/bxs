@@ -8,8 +8,8 @@
         :model="addForm" :rules="rules" 
         ref="addForm" label-width="100px" 
         class="demo-addForm">
-            <el-form-item label="git名称" prop="figure_name">
-                <el-input v-model="addForm.figure_name" placeholder="请输入"></el-input>
+            <el-form-item label="git名称" prop="git_name">
+                <el-input v-model="addForm.git_name" placeholder="请输入"></el-input>
             </el-form-item>
             <el-form-item label="git简介" prop="des">
                 <el-input
@@ -19,12 +19,9 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="标签" prop="tag">
+            <el-form-item label="标签">
                 <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
+                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="关键词" prop="keyword">
@@ -44,17 +41,19 @@
 
 <script>
 import { handleSave, handleUpdate, handleRed } from '@/api/git'
+const tags = require('@/api/tags')
 
 export default {
   name: 'addGit',
   data() {
     return {
       addForm: {},
+      tagsList: {},
       submitbtnStatus: true,
       isLoading: false,
       // 表单验证规则
       rules: {
-        figure_name: [
+        git_name: [
           { required: true, message: '必填项', trigger: 'change' }
         ],
         des: [
@@ -74,6 +73,28 @@ export default {
   },
 
   created() {
+    // 获取标签
+    tags.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.tagsList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
     if (rowData) {
@@ -83,6 +104,7 @@ export default {
         .then(res => {
           if (res.data.status.Code === 200) {
             // 处理数据
+            res.data.result[0].tag = Number(res.data.result[0].tag)
             this.addForm = res.data.result[0]
           } else {
             this.$message({
@@ -118,8 +140,10 @@ export default {
               }
             }
             console.log(postData)
+            this.isLoading = true
             handleUpdate(this.$route.query.id, postData)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -143,6 +167,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',
@@ -153,6 +178,7 @@ export default {
           } else {
             handleSave(this.addForm)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -176,6 +202,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class = "operate-wrapper">
+    <div class = "operate-wrapper" v-loading="isLoading">
       <div class="item">
         <div class="label">关键词:</div>
         <el-input clearable placeholder="请输入" v-model="searchData.name"></el-input>
@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import { getList } from '@/api/user'
+import { getList, handleDel } from '@/api/user'
 export default {
   name: 'userList',
   data() {
@@ -69,7 +69,6 @@ export default {
       isLoading: true,
       // 搜索条件
       searchData: {
-        name: '',
         page: 1,
         pagenum: 10
       },
@@ -92,18 +91,15 @@ export default {
     // 获取列表
     getList(param) {
       const postData = param || this.searchData
-      this.listLoading = true
       getList(postData)
         .then(res => {
           if (res.data.status.Code === 200) {
             // 处理数据
-            this.listLoading = false
+            this.isLoading = false
             this.tableData = res.data.result.data
-            console.log(res.data.result.data)
             this.totalNum = res.data.result.total
             this.currentPage = res.data.result.current_page
           } else {
-            this.listLoading = false
             this.$message({
               message: res.data.status.Msg,
               type: 'error',
@@ -112,7 +108,7 @@ export default {
           }
         })
         .catch(err => {
-          this.listLoading = false
+          this.isLoading = false
           console.log(err)
           this.$message({
             message: '读取接口失败！',
@@ -142,11 +138,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const postData = {
-          id: row.id
-        }
         this.isLoading = true
-        handleDel(postData)
+        handleDel(row.id)
           .then(res => {
             this.isLoading = false
             if (res.data.status.Code === 200) {
@@ -201,12 +194,12 @@ export default {
     handleSizeChange(row) {
     // 每页显示数改变
       this.searchData.pagenum = row
-    //   this.getList(this.searchData)
+      this.getList(this.searchData)
     },
     handleCurrentChange(row) {
     // 当前页改变
       this.searchData.page = row
-    //   this.getList(this.searchData)
+      this.getList(this.searchData)
     }
     // 分页end
   }

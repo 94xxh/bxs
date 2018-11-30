@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="isLoading">
     <div class="x-form">
         <el-form 
         width=100%
@@ -19,12 +19,9 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="文章标签" prop="tag">
+            <el-form-item label="标签" prop="tag">
                 <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
+                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="文章类型" prop="category_id">
@@ -46,16 +43,18 @@
 </template>
 
 <script>
-import { saveArticle, updateArticle } from '@/api/cms'
+import { saveArticle, updateArticle, handleRead } from '@/api/cms'
 import Tinymce from '@/components/Tinymce'
+const tags = require('@/api/tags')
 
 export default {
   name: 'addCms',
   data() {
     return {
       addForm: {},
+      tagsList: {},
       submitbtnStatus: true,
-      isLoading: false,
+      isLoading: true,
       // 表单验证规则
       rules: {
         title: [
@@ -80,11 +79,55 @@ export default {
     Tinymce
   },
   created() {
+    // 获取标签
+    tags.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        this.isLoading = false
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.tagsList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        this.isLoading = false
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
     if (rowData) {
       this.submitbtnStatus = false
       this.xlog('update')
+      handleRead(rowData)
+        .then(res => {
+          if (res.data.status.Code === 200) {
+            // 处理数据
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     } else {
       this.submitbtnStatus = true
       this.xlog('add')
@@ -94,6 +137,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.isLoading = true
           if (!this.submitbtnStatus) {
             // 更新
             const postData = {}
@@ -105,6 +149,7 @@ export default {
             console.log(postData)
             updateArticle(this.$route.query.id, postData)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -128,6 +173,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',
@@ -139,6 +185,7 @@ export default {
             //   新增
             saveArticle(this.addForm)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -162,6 +209,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',

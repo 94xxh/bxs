@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" v-loading="isLoading">
     <div class="x-form">
         <el-form 
         width=100%
@@ -87,6 +87,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.isLoading = true
           if (!this.submitbtnStatus) {
             // 更新
             const postData = {}
@@ -98,6 +99,7 @@ export default {
             console.log(postData)
             handleUpdate(this.$route.query.id, postData)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -121,6 +123,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',
@@ -131,6 +134,7 @@ export default {
           } else {
             handleSave(this.addForm)
               .then(res => {
+                this.isLoading = false
                 if (res.data.status.Code === 200) {
                   // 处理数据
                   this.$message({
@@ -154,6 +158,7 @@ export default {
                 }
               })
               .catch(err => {
+                this.isLoading = false
                 console.log(err)
                 this.$message({
                   message: '读取接口失败！',

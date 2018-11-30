@@ -7,12 +7,14 @@ import request from '@/utils/request'
 
 //  获取文章列表
 export function getList(params) {
+  const orderby = params.id ? params.id : 'id' // 默认按id
+  const order = params.order ? params.order : 'desc' // 默认正序
   return request({
-    url: '/api/article/index',
-    method: 'get',
-    params: {
-      params
-    }
+    url: '/api/article/index/' + params.pagenum + '/' + orderby + '/' + order + '?page=' + params.page,
+    method: 'get'
+    // params: {
+    //   params
+    // }
   })
 }
 
@@ -31,5 +33,21 @@ export function updateArticle(id, postData) {
     url: '/api/article/update/' + id,
     method: 'post',
     data: qs.stringify(postData)
+  })
+}
+
+//  删除
+export function handleDel(id) {
+  return request({
+    url: '/api/article/delete/' + id,
+    method: 'delete'
+  })
+}
+
+//  读取指定
+export function handleRead(id) {
+  return request({
+    url: '/api/article/read/' + id,
+    method: 'get'
   })
 }

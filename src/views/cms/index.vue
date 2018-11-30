@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { getList, delProject } from '@/api/cms'
+import { getList, handleDel } from '@/api/cms'
 
 export default {
   name: 'cmsList',
@@ -81,9 +81,8 @@ export default {
       listLoading: true,
       // 搜索条件
       searchData: {
-        'title': '',
-        'current_page': 1,
-        'per_page': 10
+        page: 1,
+        pagenum: 10
       },
       //  分页参数
       pageSizes: [10, 20, 30, 40],
@@ -130,7 +129,7 @@ export default {
     // 编辑
     handleEdit(row) {
       this.$router.push({
-        name: 'editProject',
+        name: 'editCms',
         query: {
           id: row.id
         }
@@ -143,11 +142,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        const postData = {
-          id: row.id
-        }
         this.isLoading = true
-        delProject(postData)
+        handleDel(row.id)
           .then(res => {
             this.isLoading = false
             if (res.data.status.Code === 200) {

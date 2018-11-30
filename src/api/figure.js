@@ -10,12 +10,14 @@ import request from '@/utils/request'
  * @param {*} params 分页等参数
  */
 export function getList(params) {
+  const orderby = params.id ? params.id : 'id' // 默认按id
+  const order = params.order ? params.order : 'desc' // 默认正序
   return request({
-    url: '/api/figure/index',
-    method: 'get',
-    params: {
-      params
-    }
+    url: '/api/figure/index/' + params.pagenum + '/' + orderby + '/' + order + '?page=' + params.page,
+    method: 'get'
+    // params: {
+    //   params
+    // }
   })
 }
 

@@ -77,7 +77,6 @@ export default {
       isLoading: true,
       // 搜索条件
       searchData: {
-        name: '',
         page: 1,
         pagenum: 10
       },
