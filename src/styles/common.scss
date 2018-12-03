@@ -231,3 +231,14 @@
 .el-form-item__content {
   width: 50%;
 }
+
+.el-table th{
+  text-align: center!important;
+}
+.el-table__body-wrapper td,
+.el-table__body-wrapper tr {
+  text-align: center !important;
+}
+.el-table__row td {
+  text-align: center !important;
+}

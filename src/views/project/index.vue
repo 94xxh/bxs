@@ -24,7 +24,7 @@
     <div class="contain-wrap">
       <div class="contain-operate">
         <router-link to="add">
-          <el-button size="mini" type="success">新增项目</el-button>
+          <el-button size="mini" type="success">新增</el-button>
         </router-link>
       </div>
       <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>

@@ -26,8 +26,8 @@
             </el-form-item>
             <el-form-item label="文章类型" prop="category_id">
                 <el-select v-model="addForm.category_id" placeholder="请选择">
-                    <el-option label="类型1" value="1"></el-option>
-                    <el-option label="类型2" value="2"></el-option>
+                    <el-option label="类型1" :value="1"></el-option>
+                    <el-option label="类型2" :value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="内容" prop="content">
@@ -112,6 +112,8 @@ export default {
         .then(res => {
           if (res.data.status.Code === 200) {
             // 处理数据
+            res.data.result.tag = Number(res.data.result.tag)
+            this.addForm = res.data.result
           } else {
             this.$message({
               message: res.data.status.Msg,
@@ -159,7 +161,7 @@ export default {
                   })
                   // 跳转
                   this.$router.push({
-                    name: 'projectList',
+                    name: 'cmsList',
                     query: {
                       reLoad: Date.parse(new Date())
                     }

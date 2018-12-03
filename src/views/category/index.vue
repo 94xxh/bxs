@@ -23,28 +23,21 @@
     <div class="contain-wrap">
       <div class="contain-operate">
         <router-link  to="add" style="margin-right:30px">
-          <el-button size="mini" type="success">新增文章</el-button>
+          <el-button size="mini" type="success">新增</el-button>
         </router-link>
       </div>
       <el-table :data="list" v-loading.body="listLoading" element-loading-text="Loading" border fit highlight-current-row>
-        <el-table-column align="center" label='ID' width="80">
-          <template slot-scope="scope">
-            {{scope.row.id}}
-          </template>
+        <el-table-column prop="id" align="center" label='ID' width="80">
         </el-table-column>
-        <el-table-column label="标题">
-          <template slot-scope="scope">
-            {{scope.row.title}}
-          </template>
+        <el-table-column prop="category_name" label="分类名称">
         </el-table-column>
-        <el-table-column label="标签" align="center">
-          <template slot-scope="scope">
-            <span>{{scope.row.tag}}</span>
-          </template>
+        <el-table-column prop="type" label="类型">
+        </el-table-column>        
+        <el-table-column prop="pid" label="父级id">
         </el-table-column>
-        <el-table-column align="center" prop="category_id" label="分类">
+        <el-table-column prop="status" label="状态" align="center">
         </el-table-column>
-        <el-table-column align="center" prop="des" label="摘要">
+        <el-table-column prop="des" label="摘要">
         </el-table-column>
         <el-table-column label="操作" width="150">
             <template slot-scope="scope">
@@ -88,7 +81,7 @@ export default {
       pageSizes: [10, 20, 30, 40],
       pageSize: 10,
       currentPage: 1,
-      totalNum: 100
+      totalNum: 0
     }
   },
   created() {
@@ -104,7 +97,9 @@ export default {
             // 处理数据
             this.listLoading = false
             console.log(res.data)
-            this.list = res.data.result
+            this.list = res.data.result.data
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
           } else {
             this.listLoading = false
             this.$message({

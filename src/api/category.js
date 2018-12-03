@@ -8,9 +8,10 @@ import request from '@/utils/request'
 //  获取列表
 export function getList(params) {
   const orderby = params.id ? params.id : 'id' // 默认按id
+  const pid = params.pid ? params.pid : 0 // 默认0 所有
   const order = params.order ? params.order : 'desc' // 默认正序
   return request({
-    url: '/api/category/index/' + params.pagenum + '/' + orderby + '/' + order + '?page=' + params.page,
+    url: '/api/category/index/' + pid + '/' + params.pagenum + '/' + orderby + '/' + order + '?page=' + params.page,
     method: 'get'
     // params: {
     //   params
@@ -18,10 +19,27 @@ export function getList(params) {
   })
 }
 
+//  读取指定
+export function handleRead(id) {
+  return request({
+    url: '/api/category/read/' + id,
+    method: 'get'
+  })
+}
+
 //  新增
-export function saveCompany(postData) {
+export function handleSave(postData) {
   return request({
     url: '/api/category/save',
+    method: 'post',
+    data: qs.stringify(postData)
+  })
+}
+
+// 更新
+export function handleUpdate(id, postData) {
+  return request({
+    url: '/api/category/update/' + id,
     method: 'post',
     data: qs.stringify(postData)
   })

@@ -50,7 +50,6 @@ const user = {
           }
           const data = response.data
           if (data.status.Code === 200) {
-            console.log(data.result)
             commit('SET_ROLES', data.result)
           } else {
             reject('getInfo: roles must be a non-null array !')
