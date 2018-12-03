@@ -125,6 +125,7 @@ export default {
         .then(res => {
           if (res.data.status.Code === 200) {
             // 处理数据
+            res.data.result.content = res.data.result.des
             this.form = res.data.result
           } else {
             this.$message({
@@ -156,7 +157,7 @@ export default {
             // 更新
             const postData = {}
             for (const i in this.form) {
-              if (this.form[i]) {
+              if (this.form[i] !== '') {
                 postData[i] = this.form[i]
               }
             }
