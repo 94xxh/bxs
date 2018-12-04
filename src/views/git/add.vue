@@ -19,7 +19,7 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="标签">
+            <el-form-item label="标签" prop="tag">
                 <el-select v-model="addForm.tag" placeholder="请选择">
                   <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
@@ -180,6 +180,7 @@ export default {
               .then(res => {
                 this.isLoading = false
                 if (res.data.status.Code === 200) {
+                  this.resetForm('addForm')
                   // 处理数据
                   this.$message({
                     message: res.data.status.Msg,

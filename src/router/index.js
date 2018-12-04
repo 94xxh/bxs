@@ -270,6 +270,38 @@ const asyncRouterMap = [
     ]
   },
   {
+    path: '/wpp',
+    component: Layout,
+    redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
+    name: 'wpp',
+    meta: {
+      title: '白皮书管理',
+      icon: 'platform',
+      roles: ['supadmin', 'admin']
+    },
+    children: [
+      {
+        path: 'list',
+        name: 'wppList',
+        component: () => import('@/views/wpp/index'),
+        meta: { title: '白皮书列表' }
+      },
+      {
+        path: 'addwpp',
+        name: 'addWpp',
+        component: () => import('@/views/wpp/add'),
+        meta: { title: '新增白皮书' }
+      },
+      {
+        path: 'editwpp',
+        name: 'editWpp',
+        hidden: true,
+        component: () => import('@/views/wpp/add'),
+        meta: { title: '编辑白皮书' }
+      }
+    ]
+  },
+  {
     path: '/category',
     component: Layout,
     redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
@@ -332,39 +364,8 @@ const asyncRouterMap = [
         meta: { title: '编辑标签' }
       }
     ]
-  },
-  {
-    path: '/wpp',
-    component: Layout,
-    redirect: 'noredirect', // 当设置 noredirect 的时候该路由在面包屑导航中不可被点击
-    name: 'wpp',
-    meta: {
-      title: '白皮书管理',
-      icon: 'platform',
-      roles: ['supadmin', 'admin']
-    },
-    children: [
-      {
-        path: 'list',
-        name: 'wppList',
-        component: () => import('@/views/wpp/index'),
-        meta: { title: '白皮书列表' }
-      },
-      {
-        path: 'addwpp',
-        name: 'addWpp',
-        component: () => import('@/views/wpp/add'),
-        meta: { title: '新增白皮书' }
-      },
-      {
-        path: 'editwpp',
-        name: 'editWpp',
-        hidden: true,
-        component: () => import('@/views/wpp/add'),
-        meta: { title: '编辑白皮书' }
-      }
-    ]
   }
+
 ]
 // 临时处理路由权限 全部可以访问
 const allRoyterMap = constantRouterMap.concat(asyncRouterMap)

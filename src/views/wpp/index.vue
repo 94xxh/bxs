@@ -32,8 +32,8 @@
             <el-table-column prop="wpp_name" label="名称" show-overflow-tooltip></el-table-column>
             <el-table-column prop="des" label="描述" show-overflow-tooltip>
             </el-table-column>
-            <el-table-column prop="tag" label="标签" show-overflow-tooltip>
-            </el-table-column>
+            <!-- <el-table-column prop="tag" label="标签" show-overflow-tooltip>
+            </el-table-column> -->
             <el-table-column prop="keyword" label="关键词" show-overflow-tooltip>
             </el-table-column>
             <el-table-column prop="wpp_url" label="地址" show-overflow-tooltip>

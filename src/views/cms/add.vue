@@ -24,10 +24,9 @@
                   <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="文章类型" prop="category_id">
+            <el-form-item label="分类" prop="category_id">
                 <el-select v-model="addForm.category_id" placeholder="请选择">
-                    <el-option label="类型1" :value="1"></el-option>
-                    <el-option label="类型2" :value="2"></el-option>
+                  <el-option v-for="(item, index) in cateList" :label="item.category_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="内容" prop="content">
@@ -46,12 +45,14 @@
 import { saveArticle, updateArticle, handleRead } from '@/api/cms'
 import Tinymce from '@/components/Tinymce'
 const tags = require('@/api/tags')
+const category = require('@/api/category')
 
 export default {
   name: 'addCms',
   data() {
     return {
       addForm: {},
+      cateList: [],
       tagsList: {},
       submitbtnStatus: true,
       isLoading: true,
@@ -79,6 +80,30 @@ export default {
     Tinymce
   },
   created() {
+    // 获取分类
+    category.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        this.isLoading = false
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.cateList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        this.isLoading = false
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 获取标签
     tags.getList({ pagenum: 9999, page: 1 })
       .then(res => {
@@ -189,6 +214,9 @@ export default {
               .then(res => {
                 this.isLoading = false
                 if (res.data.status.Code === 200) {
+                  // 重置表单
+                  this.$set(this.addForm, 'content', '')
+                  this.resetForm('addForm')
                   // 处理数据
                   this.$message({
                     message: res.data.status.Msg,

@@ -20,33 +20,29 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <el-form-item label="项目标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择项目标签">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
+            <el-form-item label="标签" prop="tag">
+                <el-select v-model="addForm.tag" placeholder="请选择">
+                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="String(item.id)" :key="index"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="项目类型" prop="type">
-                <el-select v-model="addForm.type" placeholder="请选择项目类型">
-                    <el-option label="类型1" value="1"></el-option>
-                    <el-option label="类型2" value="2"></el-option>
+            <!-- <el-form-item label="分类" prop="type">
+                <el-select v-model="addForm.type" placeholder="请选择">
+                  <el-option v-for="(item, index) in cateList" :label="item.category_name" :value="item.id" :key="index"></el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="项目网址" prop="web">
                 <el-input v-model="addForm.web" placeholder="请输入项目网址"></el-input>
             </el-form-item>
             <el-form-item label="地区" prop="area_id">
                 <el-select v-model="addForm.area_id" placeholder="请选择地区">
-                    <el-option label="地区1" value="1"></el-option>
-                    <el-option label="地区2" value="2"></el-option>
+                    <el-option label="地区1" :value="1"></el-option>
+                    <el-option label="地区2" :value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="团队" prop="team_id">
-                <el-select v-model="addForm.area_id" placeholder="请选择团队">
-                    <el-option label="team-1" value="1"></el-option>
-                    <el-option label="team-2" value="2"></el-option>
+                <el-select v-model="addForm.team_id" placeholder="请选择团队">
+                    <el-option label="team-1" :value="1"></el-option>
+                    <el-option label="team-2" :value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -60,17 +56,17 @@
 
 <script>
 import { saveProject, getProject, updateProject } from '@/api/project'
+const tags = require('@/api/tags')
+const category = require('@/api/category')
 
 export default {
   name: 'addProject',
   data() {
     return {
+      tagsList: [],
+      cateList: [],
       addForm: {
-        'project_name': '',
-        'des': '',
-        'tag': '',
-        'type': '',
-        'web': ''
+
       },
       submitbtnStatus: true, // 区分新增和 更新操作
       isLoading: false,
@@ -96,6 +92,54 @@ export default {
   },
 
   created() {
+    // 获取分类
+    category.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        this.isLoading = false
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.cateList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        this.isLoading = false
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
+    // 获取标签
+    tags.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        this.isLoading = false
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.tagsList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        this.isLoading = false
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 判断是新增还是修改
     const rowData = this.$route.query.id ? JSON.parse(this.$route.query.id) : ''
     if (rowData) {
@@ -190,6 +234,8 @@ export default {
                     type: 'success',
                     duration: 5 * 1000
                   })
+                  // 重置表单
+                  this.resetForm('addForm')
                   // 跳转
                   this.$router.push({
                     name: 'projectList',

@@ -24,13 +24,10 @@
                   <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="类型" prop="type">
+            <el-form-item label="分类" prop="type">
                 <el-select v-model="addForm.type" placeholder="请选择">
-                    <el-option label="类型1" :value="1"></el-option>
-                    <el-option label="类型2" :value="2"></el-option>
-                    <el-option label="类型3" :value="3"></el-option>
-                    <el-option label="类型4" :value="4"></el-option>
-                </el-select>            
+                  <el-option v-for="(item, index) in cateList" :label="item.category_name" :value="item.id" :key="index"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="网址" prop="web">
                 <el-input v-model="addForm.web" placeholder="请输入"></el-input>
@@ -47,6 +44,7 @@
 <script>
 import { handleSave, handleUpdate, handleRed } from '@/api/platform'
 const tags = require('@/api/tags')
+const category = require('@/api/category')
 
 export default {
   name: 'addPlatform',
@@ -54,6 +52,7 @@ export default {
     return {
       addForm: {},
       tagsList: [],
+      cateList: [],
       submitbtnStatus: true,
       isLoading: false,
       // 表单验证规则
@@ -78,6 +77,30 @@ export default {
   },
 
   created() {
+    // 获取分类
+    category.getList({ pagenum: 9999, page: 1 })
+      .then(res => {
+        this.isLoading = false
+        if (res.data.status.Code === 200) {
+        // 处理数据
+          this.cateList = res.data.result.data
+        } else {
+          this.$message({
+            message: res.data.status.Msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+      })
+      .catch(err => {
+        this.isLoading = false
+        console.log(err)
+        this.$message({
+          message: '读取接口失败！',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      })
     // 获取标签
     tags.getList({ pagenum: 9999, page: 1 })
       .then(res => {
@@ -185,6 +208,8 @@ export default {
               .then(res => {
                 this.isLoading = false
                 if (res.data.status.Code === 200) {
+                  // 重置表单
+                  this.resetForm('addForm')
                   // 处理数据
                   this.$message({
                     message: res.data.status.Msg,

@@ -229,7 +229,7 @@
 }
 
 .el-form-item__content {
-  width: 50%;
+  width: auto;
 }
 
 .el-table th{
@@ -241,4 +241,7 @@
 }
 .el-table__row td {
   text-align: center !important;
+}
+.tinymce-container{
+  width: 100%!important;
 }

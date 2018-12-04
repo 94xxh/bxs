@@ -16,12 +16,12 @@
                     <el-option v-for="(item, index) in cateList" :key="index" :label="item.category_name" :value="item.id"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="分类类型" prop="type">
+            <!-- <el-form-item label="分类类型" prop="type">
                 <el-select v-model="form.type" placeholder="请选择类型">
                     <el-option label="类型1" :value="0"></el-option>
                     <el-option label="类型2" :value="1"></el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item label="地址" prop="url">
                 <el-input v-model="form.url" placeholder="请输入"></el-input>
             </el-form-item>
@@ -202,6 +202,8 @@ export default {
               .then(res => {
                 this.isLoading = false
                 if (res.data.status.Code === 200) {
+                  // 重置表单
+                  this.resetForm('addForm')
                   // 处理数据
                   this.$message({
                     message: res.data.status.Msg,
