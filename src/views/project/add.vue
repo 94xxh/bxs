@@ -21,7 +21,7 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择">
+                <el-select multiple v-model="addForm.tag" placeholder="请选择">
                   <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="String(item.id)" :key="index"></el-option>
                 </el-select>
             </el-form-item>
@@ -150,6 +150,7 @@ export default {
       getProject(rowData)
         .then(res => {
           if (res.data.status.Code === 200) {
+            res.data.result[0].tag = res.data.result[0].tag.split(',')
             // 处理数据
             const obj = {}
             for (const i in res.data.result[0]) {
@@ -183,6 +184,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.addForm.tag = this.addForm.tag ? this.addForm.tag.join(',') : ''
           if (!this.submitbtnStatus) {
             // 更新
             const postData = {}

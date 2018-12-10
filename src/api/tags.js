@@ -1,5 +1,5 @@
 /**
- * 人物管理接口
+ * 标签管理接口
  * created by xxh on 2018-11-19
  */
 const qs = require('qs')

@@ -172,6 +172,7 @@ export default {
                 if (res.data.status.Code === 200) {
                   // 重置表单
                   this.resetForm('addForm')
+                  this.$refs.editor.setContent('')
                   // 处理数据
                   this.$message({
                     message: res.data.status.Msg,

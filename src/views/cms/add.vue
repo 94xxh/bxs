@@ -20,8 +20,8 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择">
-                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
+                <el-select multiple v-model="addForm.tag" placeholder="请选择">
+                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="String(item.id)" :key="index"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="分类" prop="category_id">
@@ -137,7 +137,7 @@ export default {
         .then(res => {
           if (res.data.status.Code === 200) {
             // 处理数据
-            res.data.result.tag = Number(res.data.result.tag)
+            res.data.result.tag = res.data.result.tag.split(',')
             this.addForm = res.data.result
           } else {
             this.$message({
@@ -164,6 +164,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.addForm.tag = this.addForm.tag ? this.addForm.tag.join(',') : ''
           this.isLoading = true
           if (!this.submitbtnStatus) {
             // 更新
@@ -216,6 +217,7 @@ export default {
                 if (res.data.status.Code === 200) {
                   // 重置表单
                   this.$set(this.addForm, 'content', '')
+                  this.$refs.editor.setContent('')
                   this.resetForm('addForm')
                   // 处理数据
                   this.$message({

@@ -1,5 +1,5 @@
 /**
- * git管理接口
+ * 分类管理接口
  * created by xxh on 2018-11-15
  */
 const qs = require('qs')
@@ -8,7 +8,7 @@ import request from '@/utils/request'
 //  获取列表
 export function getList(params) {
   const orderby = params.id ? params.id : 'id' // 默认按id
-  const pid = params.pid ? params.pid : 0 // 默认0 所有
+  const pid = params.pid ? params.pid : 5 // 默认5
   const order = params.order ? params.order : 'desc' // 默认正序
   return request({
     url: '/api/category/index/' + pid + '/' + params.pagenum + '/' + orderby + '/' + order + '?page=' + params.page,

@@ -1,5 +1,5 @@
 /**
- * git管理接口
+ * 公司管理接口
  * created by xxh on 2018-11-15
  */
 const qs = require('qs')

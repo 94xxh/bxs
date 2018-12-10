@@ -1,5 +1,5 @@
 /**
- * git管理接口
+ * 文章管理接口
  * created by xxh on 2018-11-12
  */
 const qs = require('qs')
