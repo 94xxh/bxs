@@ -19,14 +19,6 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <!-- <el-form-item label="状态" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择">
-                    <el-option label="标签1" value="1"></el-option>
-                    <el-option label="标签2" value="2"></el-option>
-                    <el-option label="标签3" value="3"></el-option>
-                    <el-option label="标签4" value="4"></el-option>
-                </el-select>
-            </el-form-item> -->
             <el-form-item label="关键词" prop="keyword">
                 <el-input v-model="addForm.keyword" placeholder="请输入"></el-input>
             </el-form-item>

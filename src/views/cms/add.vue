@@ -20,9 +20,22 @@
                 </el-input>
             </el-form-item>
             <el-form-item label="标签" prop="tag">
-                <el-select multiple v-model="addForm.tag" placeholder="请选择">
+                <!-- <el-select multiple v-model="addForm.tag" placeholder="请选择">
                   <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="String(item.id)" :key="index"></el-option>
-                </el-select>
+                </el-select> -->
+
+                <el-checkbox-group v-model="addForm.tag">
+                  <el-checkbox  v-for="(item, index) in tagsList" :label="String(item.id)" :key="index">{{item.tag_name}}</el-checkbox>
+                </el-checkbox-group>
+                <el-pagination
+                background
+                @current-change="handleCurrentChange"
+                :current-page="currentPage"
+                :page-sizes="pageSizes"
+                :page-size="pageSize"
+                layout="prev, pager, next"
+                :total="totalNum">
+                </el-pagination>
             </el-form-item>
             <el-form-item label="分类" prop="category_id">
                 <el-select v-model="addForm.category_id" placeholder="请选择">
@@ -51,7 +64,9 @@ export default {
   name: 'addCms',
   data() {
     return {
-      addForm: {},
+      addForm: {
+        tag: []
+      },
       cateList: [],
       tagsList: {},
       submitbtnStatus: true,
@@ -73,7 +88,12 @@ export default {
         content: [
           { required: true, message: '必填项', trigger: 'change' }
         ]
-      }
+      },
+      //  分页参数
+      pageSizes: [10, 20, 30, 40],
+      pageSize: 10,
+      currentPage: 1,
+      totalNum: 0
     }
   },
   components: {
@@ -105,12 +125,14 @@ export default {
         })
       })
     // 获取标签
-    tags.getList({ pagenum: 9999, page: 1 })
+    tags.getList({ pagenum: 10, page: 1 })
       .then(res => {
         this.isLoading = false
         if (res.data.status.Code === 200) {
         // 处理数据
           this.tagsList = res.data.result.data
+          this.totalNum = res.data.result.total
+          this.currentPage = res.data.result.current_page
         } else {
           this.$message({
             message: res.data.status.Msg,
@@ -258,7 +280,43 @@ export default {
     },
     resetForm(formName) {
       this.$refs[formName].resetFields()
+    },
+    // 分页事件
+    handleCurrentChange(row) {
+    // 当前页改变
+      const postData = {
+        page: row,
+        pagenum: this.pageSize
+      }
+      // 获取标签
+      this.isLoading = true
+      tags.getList(postData)
+        .then(res => {
+          this.isLoading = false
+          if (res.data.status.Code === 200) {
+          // 处理数据
+            this.tagsList = res.data.result.data
+            this.totalNum = res.data.result.total
+            this.currentPage = res.data.result.current_page
+          } else {
+            this.$message({
+              message: res.data.status.Msg,
+              type: 'error',
+              duration: 5 * 1000
+            })
+          }
+        })
+        .catch(err => {
+          this.isLoading = false
+          console.log(err)
+          this.$message({
+            message: '读取接口失败！',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        })
     }
+    // 分页end
   }
 }
 </script>

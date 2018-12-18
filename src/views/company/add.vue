@@ -19,11 +19,6 @@
                 v-model="addForm.des">
                 </el-input>
             </el-form-item>
-            <!-- <el-form-item label="标签" prop="tag">
-                <el-select v-model="addForm.tag" placeholder="请选择">
-                  <el-option v-for="(item, index) in tagsList" :label="item.tag_name" :value="item.id" :key="index"></el-option>
-                </el-select>
-            </el-form-item> -->
             <el-form-item label="分类" prop="category_id">
                 <el-select v-model="addForm.category_id" placeholder="请选择">
                   <el-option v-for="(item, index) in cateList" :label="item.category_name" :value="item.id" :key="index"></el-option>
